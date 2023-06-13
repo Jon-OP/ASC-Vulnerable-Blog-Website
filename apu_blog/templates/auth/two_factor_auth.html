@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Two Factor Authentication{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post" id="otp_form">
+    <p>Enter your OTP</p>
+    <div id="otp_number">
+        <input name="first_otp" id="first_otp" maxlength="1" onkeyup="clickEvent(this,'second_otp')" required>
+        <input name="second_otp" id="second_otp" maxlength="1" onkeyup="clickEvent(this,'third_otp')" required>
+        <input name="third_otp" id="third_otp" maxlength="1" onkeyup="clickEvent(this,'fourth_otp')" required>
+        <input name="fourth_otp" id="fourth_otp" maxlength="1" onkeyup="clickEvent(this,'fifth_otp')" required>
+        <input name="fifth_otp" id="fifth_otp" maxlength="1" onkeyup="clickEvent(this,'sixth_otp')" required>
+        <input name="sixth_otp" id="sixth_otp" maxlength="1" onkeyup="submitEvent()" required>
+    </div>
+    <div id="otp_button_container">
+        <input id="otp_button" type="submit" value="Register">
+    </div>
+  </form>
+  <script>
+    function clickEvent(first, next){
+        if(first.value.length) {
+            document.getElementById(next).focus();
+        }
+        document.getElementById(next).value = "";
+    }
+    function submitEvent(){
+        document.getElementById("otp_button").click();
+    }
+  </script>
+{% endblock %}

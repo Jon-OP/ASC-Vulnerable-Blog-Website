@@ -1,0 +1,30 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} - APU Confession Page</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<img class="banner-icon" src="https://www.apu.edu.my/sites/default/files/lifeatapu_apu.jpg">
+
+<nav>
+  <ul>
+    <li><a href="{{ url_for('blog.index') }}">Main Page</a></li>
+  </ul>
+  <h1>APU CONFESSION PAGE</h1>
+  <ul>
+    {% if g.user %}
+      <li><a href="{{ url_for('auth.profile') }}">{{ g.user['username'] }}</a></li>
+      <!-- <li><span>{{ g.user['username'] }}</span> -->
+      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+    {% else %}
+      <li><a href="{{ url_for('auth.register') }}">Register</a>
+      <li><a href="{{ url_for('auth.login') }}">Log In</a>
+    {% endif %}
+  </ul>
+</nav>
+<section class="content">
+  <header>
+    {% block header %}{% endblock %}
+  </header>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</section>

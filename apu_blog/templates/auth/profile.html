@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}View Profile{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="profile-container">
+        <a href="{{ url_for('auth.profile_picture') }}">
+            <div class="normal-profile-picture-container">
+                <img class="normal-profile-picture" src="{{url_for('static', filename='profile_picture/')}}{{g.user['profile_picture']}}">
+                Update Profile Picture
+            </div>
+        </a>
+        <form method="post">
+            <p>Username: {{g.user['username']}}</p>
+            <label for="password">Password: </label>
+            <input name="password" id="password" value="{{g.user['password']}}" required></input>
+            <input type="submit" value="Update">
+        </form>
+    </div>
+{% endblock %}

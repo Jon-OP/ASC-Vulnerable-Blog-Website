@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Updating Profile Picture{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="normal-profile-picture-container">
+        <img class="normal-profile-picture" src="{{url_for('static', filename='profile_picture/')}}{{g.user['profile_picture']}}">
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+{% endblock %}
