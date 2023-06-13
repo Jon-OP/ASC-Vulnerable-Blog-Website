@@ -15,6 +15,7 @@ otp_email_password = "PLACEHOLDER"
 
 blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
+## [VULNERABILITY-01: Credentials (Plaintext Passwords, Lack of Password Complexity Policy) ] ##
 # @blueprint.route('/register', methods=('GET', 'POST'))
 # def register():
 #     if request.method == 'POST':
@@ -30,9 +31,9 @@ blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 #         if error is None:
 #             try:
 #                 database.execute(
-#                     'INSERT INTO user (username, password, profile_picture)'
-#                     ' VALUES (?, ?, ?)',
-#                     (username, password, profile_picture)
+#                     'INSERT INTO user (email_address, username, password, profile_picture)'
+#                     ' VALUES (?, ?, ?, ?)',
+#                     ("PlaceholderEmail", username, password, profile_picture)
 #                 )
 #                 database.commit()
 #             except database.IntegrityError:
@@ -42,6 +43,7 @@ blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 #         flash(error)
 #     return render_template('auth/register.html')
 
+## [SOLUTION-01: Increase Username Complexity + Set Minimum Username Length] ##
 # Simple Implementation of Username Checks
 def check_username_validity(username):
     error = None
@@ -53,7 +55,7 @@ def check_username_validity(username):
         error = ("Your Username should have atleast 6 characters.")
     return error
     
-
+## [SOLUTION-02: Credentials - Set Password Complexity (Length & Entropy)] ##
 # Simple Implementation of Password Checks
 def check_password_complexity(password):
     error = None
@@ -87,7 +89,7 @@ def check_password_complexity(password):
             " Please ensure your password include symbols.")
     return error
 
-
+## [SOLUTION-03: Implement SOLUTION-01 & SOLUTION-02 & Store Password as Hash Digests]
 @blueprint.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
@@ -125,7 +127,7 @@ def register():
         flash(error)
     return render_template('auth/register.html')
 
-# Login Page Vulnerability (SQLi + No Password Complexity Policy + Insecure Logic + Weak Authentication Mechanism)
+## [VULNERABILITY-02: SQLi Vulnerability at the Login page & Lack of 2FA/OTP Mechanisms]
 # @blueprint.route('/login', methods=('GET', 'POST'))
 # def login():
 #     if request.method == 'POST':
@@ -149,7 +151,7 @@ def register():
 #         flash(error)
 #     return render_template('auth/login.html')
 
-# Generate OTP Code - Login Page Vulnerability
+## [SOLUTION-04: Generate OTP Code]
 def generate_otp(user):
     # Generate OTP
     totp = pyotp.TOTP(pyotp.random_base32())
@@ -161,7 +163,7 @@ def generate_otp(user):
         (otp_code, user['id'])
     )
     database.commit()
-    # Send OTP to the person email
+    # Send OTP to the USER'S email
     print(otp_code)
     send_otp(otp_code, user)
 
@@ -183,6 +185,7 @@ def send_otp(otp_code, user):
     session.sendmail(sender_address, receiver_address, text)
     session.quit()
 
+## [SOLUTION-05: Allow users to Attempt Login 5 times every 20 minutes]
 # Function to Update Database when user fail to authenticate with a Valid Username - Login Page Vulnerability
 def fail_authentication(user_id):
     database = get_database()
@@ -191,7 +194,7 @@ def fail_authentication(user_id):
     )
     database.commit()
 
-# Sanitized Login Function - Login Page Vulnerability
+# [SOLUTION-06: Remedy SQLi Vulnerability (Parameterization) + Implement SOLUTION-04 & SOLUTION-05]
 @blueprint.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
@@ -224,7 +227,7 @@ def login():
         flash(error)
     return render_template('auth/login.html')
 
-# Login Page Vulnerability - Add 2FA Mechanism
+# Redirect Users to 2FA Page before allowing users to access their accounts
 @blueprint.route('/two_factor_auth', methods=('GET', 'POST'))
 def two_factor_auth():
     if request.method == 'POST':
@@ -250,10 +253,10 @@ def two_factor_auth():
             return redirect(url_for('auth.login'))
     return render_template('auth/two_factor_auth.html')
 
+# [Not Important] Load Users who are authenticated
 @blueprint.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
-
     if user_id is None:
         g.user = None
     else:
@@ -266,6 +269,7 @@ def logout():
     session.clear()
     return redirect(url_for('blog.index'))
 
+# [Not Important] Support Function to force users to Login to perform certain action
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
@@ -298,7 +302,12 @@ def profile():
         flash(error)
     return render_template('auth/profile.html')
 
-# Unrestricted File Upload Vulnerability
+###########################################################
+## [VULNERABILITY-03: Unrestricted File Upload ]     ######
+## This function does not:                           ######
+##  (1) Check whether File Exists;                   ######
+##  (2) File Name is Sanitized (Directory Traversal) ######
+###########################################################
 # @blueprint.route('/profile_picture', methods=('GET', 'POST'))
 # @login_required
 # def profile_picture():
@@ -325,7 +334,9 @@ def profile():
 #         return redirect(url_for('auth.profile'))
 #     return render_template('auth/profile_picture.html')
 
-# Sanitized for Unrestricted File Upload
+##################################################################
+## [SOLUTION-07: Validate and Sanitize Files Uploaded by Users] ##
+##################################################################
 @blueprint.route('/profile_picture', methods=('GET', 'POST'))
 @login_required
 def profile_picture():

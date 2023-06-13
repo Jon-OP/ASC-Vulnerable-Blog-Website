@@ -7,7 +7,7 @@ from apu_blog.db import get_database
 
 blueprint = Blueprint('blog', __name__)
 
-
+# [Not Important] Redirect Users to Home Page; Displays all Posts by all Users
 @blueprint.route('/')
 def index():
     database = get_database()
@@ -18,6 +18,7 @@ def index():
     ).fetchall()
     return render_template('blog/index.html', posts=posts)
 
+# [Not Important] Allow User to create their own Posts
 @blueprint.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
@@ -41,6 +42,7 @@ def create():
             return redirect(url_for('blog.index'))
     return render_template('blog/create.html')
 
+# [Not Important] Retrieve specific Post by ID and User from the Database
 def get_post(id, check_author = True):
     post = get_database().execute(
         'SELECT p.id, title, body, created, author_id, username'
@@ -56,6 +58,7 @@ def get_post(id, check_author = True):
     
     return post
 
+# [Not Important] Allow Users to Update their own post
 @blueprint.route('/update', methods=('GET', 'POST'))
 @login_required
 def update():
@@ -82,6 +85,7 @@ def update():
             return redirect(url_for('blog.index'))
     return render_template('blog/update.html', post=post)
 
+# [Not Important] Allow Users to Delete their own Post
 @blueprint.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):

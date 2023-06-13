@@ -42,15 +42,19 @@ def create_app(test_config = None):
     @app.route('/hello')
     def hello():
         return 'Hello Universe'
-
-    # # Old Vulnerable Command - SSTI/XSS Vulnerability
+    ######################################################################################
+    ## [VULNERABILITY-03: Server-Side Template Injection (SSTI)                         ##
+    ## (1) Used Vulnerable Function to Render Jinja2 Template, render_template_string() ##
+    ######################################################################################
     # @app.errorhandler(404)
     # def page_not_found(error):
     #     error_message = "ERROR {}".format(error)
     #     print(error_message)
     #     return render_template_string(error_message)
 
-    # Sanitized Command
+    #####################################################################################
+    ## [SOLUTION-08: Use Safer Function to Render Jinja2 Template, render_template() ] ##
+    #####################################################################################
     @app.errorhandler(404)
     def page_not_found(error):
         error_message = "ERROR {}".format(error)
