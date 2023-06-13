@@ -1,3 +1,4 @@
 text.txt
-/venv/
+venv/*
+!README.md
 /__pycache__
