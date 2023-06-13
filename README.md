@@ -39,7 +39,9 @@ flask --app apu_blog init-db
 flask --app apu_blog show-db
 ```
 
-5. Starting the Server (Set xxx.xxx.xxx.xxx as your IP address)
+5. \[Optional\] Create a Microsoft Outlook account and use that account as the 2-Factor Authentication sender. Set Line \#13 & \#14 in auth.py to your Microsoft Outlook credentials.
+
+6. Starting the Server (Set xxx.xxx.xxx.xxx as your IP address)
 ```
 flask --app apu_blog run --debug --host xxx.xxx.xxx.xxx -p 5000
 ```
