@@ -15,7 +15,9 @@ otp_email_password = "PLACEHOLDER"
 
 blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
+################################################################################################
 ## [VULNERABILITY-01: Credentials (Plaintext Passwords, Lack of Password Complexity Policy) ] ##
+################################################################################################
 # @blueprint.route('/register', methods=('GET', 'POST'))
 # def register():
 #     if request.method == 'POST':
@@ -43,7 +45,9 @@ blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 #         flash(error)
 #     return render_template('auth/register.html')
 
+###############################################################################
 ## [SOLUTION-01: Increase Username Complexity + Set Minimum Username Length] ##
+###############################################################################
 # Simple Implementation of Username Checks
 def check_username_validity(username):
     error = None
@@ -54,8 +58,10 @@ def check_username_validity(username):
     elif not len(username) >= 6:
         error = ("Your Username should have atleast 6 characters.")
     return error
-    
+
+#############################################################################
 ## [SOLUTION-02: Credentials - Set Password Complexity (Length & Entropy)] ##
+#############################################################################
 # Simple Implementation of Password Checks
 def check_password_complexity(password):
     error = None
@@ -89,7 +95,9 @@ def check_password_complexity(password):
             " Please ensure your password include symbols.")
     return error
 
-## [SOLUTION-03: Implement SOLUTION-01 & SOLUTION-02 & Store Password as Hash Digests]
+#########################################################################################
+## [SOLUTION-03: Implement SOLUTION-01 & SOLUTION-02 & Store Password as Hash Digests] ##
+#########################################################################################
 @blueprint.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
@@ -127,7 +135,9 @@ def register():
         flash(error)
     return render_template('auth/register.html')
 
-## [VULNERABILITY-02: SQLi Vulnerability at the Login page & Lack of 2FA/OTP Mechanisms]
+###########################################################################################
+## [VULNERABILITY-02: SQLi Vulnerability at the Login page & Lack of 2FA/OTP Mechanisms] ##
+###########################################################################################
 # @blueprint.route('/login', methods=('GET', 'POST'))
 # def login():
 #     if request.method == 'POST':
@@ -151,7 +161,9 @@ def register():
 #         flash(error)
 #     return render_template('auth/login.html')
 
-## [SOLUTION-04: Generate OTP Code]
+######################################
+## [SOLUTION-04: Generate OTP Code] ##
+######################################
 def generate_otp(user):
     # Generate OTP
     totp = pyotp.TOTP(pyotp.random_base32())
@@ -185,7 +197,9 @@ def send_otp(otp_code, user):
     session.sendmail(sender_address, receiver_address, text)
     session.quit()
 
-## [SOLUTION-05: Allow users to Attempt Login 5 times every 20 minutes]
+##########################################################################
+## [SOLUTION-05: Allow users to Attempt Login 5 times every 20 minutes] ##
+##########################################################################
 # Function to Update Database when user fail to authenticate with a Valid Username - Login Page Vulnerability
 def fail_authentication(user_id):
     database = get_database()
@@ -194,7 +208,9 @@ def fail_authentication(user_id):
     )
     database.commit()
 
-# [SOLUTION-06: Remedy SQLi Vulnerability (Parameterization) + Implement SOLUTION-04 & SOLUTION-05]
+#######################################################################################################
+## [SOLUTION-06: Remedy SQLi Vulnerability (Parameterization) + Implement SOLUTION-04 & SOLUTION-05] ##
+#######################################################################################################
 @blueprint.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
